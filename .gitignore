@@ -1,0 +1,7 @@
+build/
+dist/
+secretsafe.egg-info/
+.venv/
+.idea/
+
+*.pyc
