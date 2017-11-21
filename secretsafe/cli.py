@@ -6,11 +6,15 @@ import subprocess
 
 import argparse
 
-import data
+from secretsafe import config
+from secretsafe import data
+
+CONFIG = config.Config()
+STORE = data.store_from_config(CONFIG)
 
 
 def _select_password(regex):
-    names = data.list_passwords(regex=regex)
+    names = STORE.list_passwords(regex=regex)
     if names and len(names) > 1:
         print('Select a secret:')
         for i in range(0, len(names)):
@@ -45,13 +49,13 @@ def get(args):
         print('No matching passwords.')
         return
 
-    raw_secret = data.get_password(name, getpass.getpass('Key Password: '))
+    raw_secret = STORE.get_password(name, getpass.getpass('Key Password: '))
 
     if args.echo:
         print(raw_secret)
     else:
         process = subprocess.Popen(['less', ], stdin=subprocess.PIPE)
-        process.communicate(raw_secret)
+        process.communicate('{}\n\n{}'.format(name, raw_secret))
 
 
 def delete(args):
@@ -76,7 +80,7 @@ def delete(args):
                 confirm_delete = user_input == 'y'
 
     if confirm_delete:
-        data.delete_password(name)
+        STORE.delete_password(name)
     else:
         print('Cancelling deletion.')
 
@@ -104,8 +108,8 @@ def save(args):
             print('You must provide a secret key.')
 
     try:
-        data.save_password(name, raw_secret, key_password,
-                           overwrite=args.force)
+        STORE.save_password(name, raw_secret, key_password,
+                            overwrite=args.force)
     except data.PasswordExistsException:
         print('Password already exists, overwrite with --force.')
 
@@ -128,7 +132,12 @@ def load(args):
 
     for name, raw_secret in secrets.items():
         print(name)
-        data.save_password(name, bytes(raw_secret), key_password)
+        STORE.save_password(name, bytes(raw_secret), key_password)
+
+
+def export_to(args):
+    exports = data.JsonFileDataStore().secret_export()
+    data.store_from_config(CONFIG, store_name=args.store_name).secret_import(exports)
 
 
 def main():
@@ -160,6 +169,10 @@ def main():
     delete_parser.add_argument('filename')
     delete_parser.add_argument('-r', '--reuse',
                                action='store_true', default=False)
+
+    delete_parser = subparsers.add_parser('export-to')
+    delete_parser.set_defaults(func=export_to)
+    delete_parser.add_argument('store_name', choices=data.STORES.keys())
 
     args = parser.parse_args()
     args.func(args)
