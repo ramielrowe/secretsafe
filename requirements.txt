@@ -1,2 +1,4 @@
 cryptography
 google-cloud
+google-cloud-datastore
+six

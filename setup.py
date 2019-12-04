@@ -21,9 +21,11 @@ setup(
     ],
     setup_requires=(
         'cryptography',
+        'six',
     ),
     install_requires=(
         'cryptography',
+        'six',
     ),
     entry_points={
         'console_scripts': ['secretsafe=secretsafe.cli:main'],

@@ -20,7 +20,7 @@ def decrypt(cipher_text, salt, key_phrase,
         iterations=key_iterations,
         backend=backend
     )
-    key = base64.b64encode(kdf.derive(key_phrase))
+    key = base64.b64encode(kdf.derive(key_phrase.encode()))
     return fernet.Fernet(key).decrypt(cipher_text)
 
 
@@ -35,6 +35,6 @@ def encrypt(plaint_text, key_phrase,
         iterations=key_iterations,
         backend=backend
     )
-    key = base64.b64encode(kdf.derive(key_phrase))
+    key = base64.b64encode(kdf.derive(key_phrase.encode()))
     cipher_text = fernet.Fernet(key).encrypt(plaint_text)
     return cipher_text, salt

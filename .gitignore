@@ -3,5 +3,6 @@ dist/
 secretsafe.egg-info/
 .venv/
 .idea/
+.vscode/
 
 *.pyc

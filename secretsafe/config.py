@@ -1,6 +1,6 @@
 import os
 
-import ConfigParser
+from six.moves import configparser
 
 DEFAULT_CONFIG_PATH = '~/.secretsaferc'
 
@@ -21,7 +21,7 @@ class Config(object):
 
         config_path = os.path.expanduser(config_path)
         if os.path.isfile(config_path):
-            parser = ConfigParser.ConfigParser()
+            parser = configparser.ConfigParser()
             with open(config_path, 'r') as fp:
                 parser.readfp(fp)
             for name, env in self._configs:

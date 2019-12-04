@@ -55,7 +55,7 @@ def get(args):
         print(raw_secret)
     else:
         process = subprocess.Popen(['less', ], stdin=subprocess.PIPE)
-        process.communicate('{}\n\n{}'.format(name, raw_secret))
+        process.communicate('{}\n\n{}'.format(name, raw_secret.decode()).encode())
 
 
 def delete(args):
